@@ -134,27 +134,21 @@ public class AriaConfig {
       return;
     }
 
-    NetworkRequest.Builder builder = new NetworkRequest.Builder();
-    NetworkRequest request = builder.addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-        .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-        .build();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      cm.registerNetworkCallback(request, new ConnectivityManager.NetworkCallback() {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        cm.registerDefaultNetworkCallback(new ConnectivityManager.NetworkCallback(){
+          @Override public void onLost(Network network) {
+            super.onLost(network);
+            isConnectedNet = isNetworkAvailable();
+            ALog.d(TAG, "onLost, isConnectNet = " + isConnectedNet);
+          }
 
-        @Override public void onLost(Network network) {
-          super.onLost(network);
-          isConnectedNet = isNetworkAvailable();
-          ALog.d(TAG, "onLost, isConnectNet = " + isConnectedNet);
-        }
-
-        @Override public void onAvailable(Network network) {
-          super.onAvailable(network);
-          isConnectedNet = true;
-          ALog.d(TAG, "onAvailable, isConnectNet = true");
-        }
-      });
-    }
+          @Override public void onAvailable(Network network) {
+            super.onAvailable(network);
+            isConnectedNet = true;
+            ALog.d(TAG, "onAvailable, isConnectNet = true");
+          }
+        });
+      }
   }
 
   public boolean isNetworkAvailable() {
