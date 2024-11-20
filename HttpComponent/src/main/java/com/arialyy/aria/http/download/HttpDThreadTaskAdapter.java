@@ -157,7 +157,7 @@ final class HttpDThreadTaskAdapter extends BaseHttpThreadTaskAdapter {
       int len;
       while (getThreadTask().isLive() && (len = is.read(buffer)) != -1) {
         if (getThreadTask().isBreak()) {
-          break;
+          return;
         }
         if (mSpeedBandUtil != null) {
           mSpeedBandUtil.limitNextBytes(len);
@@ -190,7 +190,7 @@ final class HttpDThreadTaskAdapter extends BaseHttpThreadTaskAdapter {
     FileChannel foc = null;
     ReadableByteChannel fic = null;
     try {
-      int len;
+      int len = 0;
       fos = new FileOutputStream(getThreadConfig().tempFile, true);
       foc = fos.getChannel();
       fic = Channels.newChannel(is);
@@ -200,8 +200,15 @@ final class HttpDThreadTaskAdapter extends BaseHttpThreadTaskAdapter {
 
       while (getThreadTask().isLive() && (len = fic.read(bf)) != -1) {
         if (getThreadTask().isBreak()) {
+          ALog.d(TAG,"getThreadTask().isBreak() = true");
+          return;
+        }
+
+        // 如果中途文件被删除了
+        if (!getThreadConfig().tempFile.exists() && len != 0){
           break;
         }
+
         if (mSpeedBandUtil != null) {
           mSpeedBandUtil.limitNextBytes(len);
         }
@@ -219,6 +226,7 @@ final class HttpDThreadTaskAdapter extends BaseHttpThreadTaskAdapter {
           progress(len);
         }
       }
+      ALog.d(TAG,"isLive = " + getThreadTask().isLive() + ",isBreak = " + getThreadTask().isBreak() + ",len = " + len);
       fos.flush();
       handleComplete();
     } catch (IOException e) {
@@ -227,7 +235,6 @@ final class HttpDThreadTaskAdapter extends BaseHttpThreadTaskAdapter {
     } finally {
       try {
         if (fos != null) {
-          fos.flush();
           fos.close();
         }
         if (foc != null) {

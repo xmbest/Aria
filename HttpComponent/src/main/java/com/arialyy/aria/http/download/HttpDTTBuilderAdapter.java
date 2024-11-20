@@ -28,7 +28,7 @@ final class HttpDTTBuilderAdapter extends AbsNormalTTBuilderAdapter {
             new File(String.format(IRecordHandler.SUB_PATH, getTempFile().getPath(), i));
         if (blockFile.exists()) {
           ALog.d(TAG, String.format("分块【%s】已经存在，将删除该分块", i));
-          FileUtil.deleteFile(blockFile);
+//          FileUtil.deleteFile(blockFile);
         }
       }
     }

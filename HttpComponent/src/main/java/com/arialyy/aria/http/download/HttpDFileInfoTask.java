@@ -69,6 +69,7 @@ final class HttpDFileInfoTask implements IInfoTask, Runnable {
   HttpDFileInfoTask(DTaskWrapper taskWrapper) {
     this.mTaskWrapper = taskWrapper;
     mEntity = taskWrapper.getEntity();
+    ALog.d(TAG,"mEntity = " + mEntity);
     mConnectTimeOut = AriaConfig.getInstance().getDConfig().getConnectTimeOut();
     taskOption = (HttpTaskOption) taskWrapper.getTaskOption();
   }
@@ -193,6 +194,7 @@ final class HttpDFileInfoTask implements IInfoTask, Runnable {
     }
 
     mTaskWrapper.setCode(code);
+    ALog.d(TAG,"code = " + code);
     if (code == HttpURLConnection.HTTP_PARTIAL) {
       if (!checkLen(len) && !isChunked) {
         if (len < 0) {
@@ -210,6 +212,7 @@ final class HttpDFileInfoTask implements IInfoTask, Runnable {
       if (TextUtils.isEmpty(contentType)) {
         return;
       }
+      ALog.d(TAG,"contentType = " + contentType);
       if (contentType.equals("text/html")) {
         BufferedReader reader =
             new BufferedReader(new InputStreamReader(ConnectionHelp.convertInputStream(conn)));
@@ -400,6 +403,7 @@ final class HttpDFileInfoTask implements IInfoTask, Runnable {
       if (sLength == null || sLength.isEmpty()) {
         return -1;
       }
+      ALog.d(TAG,"sLength = " + sLength);
       String temp = sLength.get(0);
       long len = TextUtils.isEmpty(temp) ? -1 : Long.parseLong(temp);
       // 某些服务，如果设置了conn.setRequestProperty("Range", "bytes=" + 0 + "-");
