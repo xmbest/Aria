@@ -457,12 +457,10 @@ public class ThreadTask implements IThreadTask, IThreadTaskObserver {
       sendFailMsg(null, false);
       return;
     }
-    if (mFailTimes < RETRY_NUM
-        && needRetry
-        && (NetUtils.isConnected(AriaConfig.getInstance().getAPP()) || isNotNetRetry)
+    if (needRetry
+        && (NetUtils.isConnected(AriaConfig.getInstance().getAPP()) || (isNotNetRetry && mFailTimes++ < RETRY_NUM) )
         && !isBreak()) {
       ALog.w(TAG, String.format("分块【%s】第%s次重试", getFileName(), String.valueOf(mFailTimes)));
-      mFailTimes++;
       handleBlockRecord();
       ThreadTaskManager.getInstance().retryThread(this);
       return;
